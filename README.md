@@ -62,6 +62,6 @@ $ dotnet run
 # :page_facing_up: License
 
 
-This project is under license from MIT. For more details, see the [LICENSE](https://github.com/nilbersilva/WPFGitHubExplorer/blob/main/LICENSE) file.
+This project is under license from MIT.
 
 <a href="#top">Back to top</a>
