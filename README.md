@@ -13,6 +13,7 @@ WPF .NET Core 5.0 - Creates an Installer for Windows Applications from a json co
 - Color change, button customizations all on XAML
 - Insert keys on the Windows registry
 - Setup Unninstaller
+- Multi Language Suport
 
 # :rocket: Technologies
 
