@@ -1,0 +1,64 @@
+﻿<Window x:Class="NioTup.Lib.Controls.NioTupMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" UseLayoutRounding="True"
+        mc:Ignorable="d" ContentRendered="Window_ContentRendered"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent" 
+        BorderBrush="{DynamicResource Application.Brushes.Border}"
+        Foreground="{DynamicResource Application.Brushes.Foreground}" 
+        TextElement.Foreground="{DynamicResource Application.Brushes.Foreground}" 
+        FontSize="{DynamicResource Application.Font.Size}"     
+        BorderThickness="1" 
+        Title="{Binding Title}" MinHeight="155" MaxWidth="470" MinWidth="350">
+    <Window.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="30" CornerRadius="0" GlassFrameThickness="0" NonClientFrameEdges="None" 
+                      ResizeBorderThickness="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Border Background="{DynamicResource Application.Brushes.Background}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Rectangle x:Name="TitlePanel" Fill="{DynamicResource Application.Brushes.Accent}" MinHeight="30"/>
+            <TextBlock x:Name="txtTitle" Text="{Binding Title}"  Foreground="{DynamicResource Application.Brushes.Accent.Foreground}"
+                       HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8,8,38,8"/>
+
+            <Path Data="{Binding PathData}" Margin="8" VerticalAlignment="Top"
+                  Fill="{DynamicResource Application.Brushes.Accent.Foreground}"
+                  HorizontalAlignment="Right" Width="24" Height="24" Stretch="Uniform"/>
+     
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <TextBlock Grid.Row="1" TextWrapping="Wrap"
+                     Text="{Binding Message}" Margin="4"
+                     Background="Transparent"  Foreground="{DynamicResource Application.Brushes.Foreground}" />
+            </ScrollViewer>
+            
+
+            <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="2" HorizontalAlignment="Right">
+                <Button x:Name="btnFirst" Content="{Binding FirstButtonText}" Margin="5,0" MinWidth="100" MinHeight="30"
+                        Visibility="{Binding FirstButtonIsVisible,Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding FirstButtonCommand}"/>
+                <Button x:Name="btnSecond" Content="{Binding SecondButtonText}" Margin="5,0" MinWidth="100" MinHeight="30"
+                        Visibility="{Binding SecondButtonIsVisible,Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding SecondButtonCommand}"/>
+                <Button x:Name="btnThird" Content="{Binding ThirdButtonText}" Margin="5,0" MinWidth="100"  MinHeight="30"
+                        Visibility="{Binding ThirdButtonIsVisible,Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding ThirdButtonCommand}"/>
+            </StackPanel>
+        </Grid>  
+    </Border>
+</Window>

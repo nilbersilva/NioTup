@@ -1,0 +1,64 @@
+{
+  "ApplicationAssemblyName": "TestName",
+  "ApplicationIconPath": "dotnetCore.ico",
+  "SplashImagePath": "splash.png",
+  "CompanyLogoPath": null,
+  "OutputPath": "OutputPath",
+  "LicencePath": "licence.rtf",
+  "Platform": 2,
+  "CompressionLevel": 0,
+  "Framework": 0,
+  "Files": [
+    {
+      "From": [
+        {
+          "GroupName": null,
+          "FileName": "TestFolder\\*.*",
+          "DestName": null,
+          "ShortcutDestName": null,
+          "TopDirectoryOnly": false
+        }
+      ],
+      "To": [
+        "{App}"
+      ]
+    }
+  ],
+  "Keys": [
+    {
+      "Name": "App",
+      "Value": "{Desktop}\\TesteApp"
+    }
+  ],
+  "ApplicationName": null,
+  "LicenceUrlNavigate": null,
+  "CompanyName": "NioTup Company",
+  "MainWindowTitle": "NioTup Main Window Title",
+  "DefaultInstallPath": null,
+  "RequiresDefaultInstallPath": false,
+  "AutoCloseAfterInstall": false,
+  "LicenceURL": null,
+  "SetupDefaultFontSize": 14,
+  "IgnoreWelcomeView": false,
+  "DarkTheme": false,
+  "AssemblyVersion": "1.15.16.17",
+  "AssemblyFileVersion": "1.18.19.20",
+  "AssemblyProduct": "Assembly Product Test",
+  "AssemblyTitle": "Assembly Title Test",
+  "AssemblyCopyright": "Assembly Copyright Test",
+  "AssemblyDescription": "Assembly Description Test",
+  "DownloadFiles": [
+    {
+      "URL": "https://i.pinimg.com/originals/66/c0/f3/66c0f3951cf18634e632c383284ab1f7.png",
+      "Headers": null,
+      "Destination": "{Desktop}\\TesteApp\\bob.png",
+      "ReportProgress": true
+    },
+    {
+      "URL": "https://miro.medium.com/max/1838/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
+      "Headers": null,
+      "Destination": "{Desktop}\\TesteApp\\babyyoda.jpeg",
+      "ReportProgress": true
+    }
+  ]
+}

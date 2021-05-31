@@ -1,0 +1,63 @@
+﻿<Window x:Class="NioTup.Lib.NioTupMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:NioTup.Lib.Controls"
+        xmlns:Views="clr-namespace:NioTup.Lib.Views" 
+        xmlns:p = "clr-namespace:NioTup.Lib.Properties"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" WindowStyle="None"
+        BorderThickness="1"  AllowsTransparency="True" ResizeMode="NoResize"
+        BorderBrush="{DynamicResource Application.Brushes.Border}" 
+        Background="{DynamicResource Application.Brushes.Background}"
+        Foreground="{DynamicResource Application.Brushes.Foreground}" 
+        TextElement.Foreground="{DynamicResource Application.Brushes.Foreground}" 
+        FontSize="{DynamicResource Application.Font.Size}"
+         Loaded="Window_Loaded"
+        xmlns:LocalVM ="clr-namespace:NioTup.Lib.ViewModels"
+        d:DataContext="{d:DesignInstance Type=LocalVM:NioTupInstallVM, IsDesignTimeCreatable=true}" 
+        Title="NioTup" Height="450" Width="600">
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="30" CornerRadius="0" GlassFrameThickness="0" NonClientFrameEdges="None" 
+                      ResizeBorderThickness="2" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Duration="00:00:0.4" Storyboard.TargetProperty="Opacity" From="0" To="1" AutoReverse="False"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    <Window.Resources>
+        <ResourceDictionary>           
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding SetupInfo.CompanyName}" FontWeight="Bold" FontSize="18" Margin="8"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True" >
+            <Image Source="/NioTup.Lib;component/Images/sun.png" Stretch="Uniform" Width="24" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <Controls:ToggleSwitch HorizontalAlignment="Right" Click="ToggleButton_Click" WindowChrome.IsHitTestVisibleInChrome="True" 
+                                   IsChecked="{Binding SetupInfo.DarkTheme,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5,0">
+            </Controls:ToggleSwitch>
+            <Image Source="/NioTup.Lib;component/Images/moon.png" Stretch="Uniform" Width="20" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+        </StackPanel>
+      
+        <TextBlock Grid.Row="1" Text="{Binding SetupInfo.MainWindowTitle}" FontWeight="Bold" FontSize="16" Margin="8"/>
+
+        <ContentPresenter Grid.Row="2" Content="{Binding MainWindowContent}"
+                           Margin="8"/> 
+
+       
+    </Grid>
+</Window>

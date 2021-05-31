@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ice="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <Color x:Key="Application.Brushes.Accent.Color">#8257e6</Color>
+    <SolidColorBrush x:Key="Application.Brushes.Accent" Color="{DynamicResource Application.Brushes.Accent.Color}" />
+
+    <Color x:Key="Application.Brushes.AccentLight.Color">#A789ED</Color>
+    <SolidColorBrush x:Key="Application.Brushes.AccentLight" Color="{DynamicResource Application.Brushes.AccentLight.Color}" />
+    
+
+    <Color x:Key="Application.Brushes.Accent.Foreground.Color">White</Color>
+    <SolidColorBrush x:Key="Application.Brushes.Accent.Foreground" Color="{DynamicResource Application.Brushes.Accent.Foreground.Color}" />
+
+    <Color x:Key="Application.Brushes.AccentLight.Foreground.Color">White</Color>
+    <SolidColorBrush x:Key="Application.Brushes.AccentLight.Foreground" Color="{DynamicResource Application.Brushes.Accent.Foreground.Color}" />
+    
+    <Color x:Key="Application.Brushes.Background.Color">#121214</Color>
+    <SolidColorBrush x:Key="Application.Brushes.Background" Color="{DynamicResource Application.Brushes.Background.Color}" />
+
+    <Color x:Key="Application.Brushes.Foreground.Color">White</Color>
+    <SolidColorBrush x:Key="Application.Brushes.Foreground" Color="{DynamicResource Application.Brushes.Foreground.Color}" />
+
+    <Color x:Key="Application.Brushes.Border.Color">#8257E6</Color>
+    <SolidColorBrush x:Key="Application.Brushes.Border" Color="{DynamicResource Application.Brushes.Border.Color}" />
+
+    <sys:Double x:Key="Application.Font.Size">14</sys:Double>
+
+    <Color x:Key="Button.Brushes.Border.Color">#21273E</Color>
+    <Color x:Key="Button.Brushes.Background.Color">#2E3653</Color>
+    <Color x:Key="Button.Brushes.Foreground.Color">White</Color>
+    <Color x:Key="Button.Brushes.Background.Color.MouseOver">#8257e6</Color>
+    <Color x:Key="Button.Brushes.Foreground.Color.MouseOver">White</Color>
+    <Color x:Key="Button.Brushes.Background.Color.Pressed">#5B3CA1</Color>
+    <Color x:Key="Button.Brushes.Foreground.Color.Pressed">White</Color>
+    <Color x:Key="Button.Brushes.Background.Color.Focused">#8E67E8</Color>
+
+    <SolidColorBrush x:Key="Button.Brushes.Border" Color="{DynamicResource Button.Brushes.Border.Color}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Background" Color="{DynamicResource Button.Brushes.Background.Color}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Foreground" Color="{DynamicResource Button.Brushes.Foreground.Color}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Foreground.MouseOver" Color="{DynamicResource Button.Brushes.Foreground.Color.MouseOver}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Background.MouseOver" Color="{DynamicResource Button.Brushes.Background.Color.MouseOver}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Background.Pressed" Color="{DynamicResource Button.Brushes.Background.Color.Pressed}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Foreground.Pressed" Color="{DynamicResource Button.Brushes.Foreground.Color.Pressed}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Background.Focused" Color="{DynamicResource Button.Brushes.Background.Color.Focused}"/>
+    <SolidColorBrush x:Key="Button.Brushes.Disabled" Color="#a1a1a1"/>
+</ResourceDictionary>
