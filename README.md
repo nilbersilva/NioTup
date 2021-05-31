@@ -47,6 +47,18 @@ $ cd NioTup
 $ dotnet run
 ```
 
+## Screenshots
+
+<div> 
+  <img src="./github_assets/StartScreen.jpg" width="200" />
+  <img src="./github_assets/LicenceScreen.jpg" width="200" />
+  <img src="./github_assets/InstallingScreen.jpg" width="200" />
+</div>
+<div> 
+ <img src="./github_assets/InstallCompleteScreen.jpg" width="200" />
+  <img src="./github_assets/DarkTheme.jpg" width="200" />
+</div>
+
 # :page_facing_up: License
 
 
