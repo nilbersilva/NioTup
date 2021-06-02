@@ -308,7 +308,7 @@ namespace NioTup.Lib
 
         public static string BytesToReadableText(double bytes)
         {
-            string[] sizes = { "Byes", "KB", "MB", "GB", "TB" };
+            string[] sizes = { "Bytes", "KB", "MB", "GB", "TB" };
             int order = 0;
             while (bytes >= 1024 && order < sizes.Length - 1)
             {
