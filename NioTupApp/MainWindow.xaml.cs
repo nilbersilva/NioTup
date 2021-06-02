@@ -54,6 +54,7 @@ namespace NioTupApp
                 MyVM.IsBusy = true;
                 try
                 {
+                    
                     MyVM.CurrentMessage = "Reading project file";
                     SetupConfig config = System.Text.Json.JsonSerializer.Deserialize<SetupConfig>(File.ReadAllText(MyVM.ProjectPath));
 

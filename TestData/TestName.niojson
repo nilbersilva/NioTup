@@ -40,7 +40,7 @@
   "LicenceURL": null,
   "SetupDefaultFontSize": 14,
   "IgnoreWelcomeView": false,
-  "DarkTheme": false,
+  "DarkTheme": true,
   "AssemblyVersion": "1.15.16.17",
   "AssemblyFileVersion": "1.18.19.20",
   "AssemblyProduct": "Assembly Product Test",

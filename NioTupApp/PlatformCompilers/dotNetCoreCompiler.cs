@@ -396,10 +396,10 @@ namespace NioTupApp.PlatformCompilers
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DebugType>embedded</DebugType>
     <OutputType>Exe</OutputType>
     <UseWPF>true</UseWPF>
@@ -461,9 +461,14 @@ namespace #APP_NAME# {
     {        
         static App()
         {
-            Shared.MainApplicationAssembly = typeof(App).Assembly;
-            SplashScreen splashScreen = new SplashScreen(typeof(App).Assembly, ""splash.png"");
-            splashScreen.Show(true);
+            try
+            {
+                Shared.MainApplicationAssembly = typeof(App).Assembly;
+                SplashScreen splashScreen = new SplashScreen(typeof(App).Assembly, ""splash.png"");
+                splashScreen.Show(true);
+            }
+            catch(Exception)
+            {}
         }
 
         public App()
