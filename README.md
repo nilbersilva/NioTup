@@ -7,13 +7,15 @@ WPF .NET Core 5.0 - Creates an Installer for Windows Applications from a json co
 - Light and Dark themes
 - Setup already Zips files and Extracts them on a specified location
 - Downloads Files/Images/etc to a specified location
+- Allow C# scripts, handling Setup events and more.
+- Multi Language Suport
 
 ## ToDo
-- Allow C# scripts, handling Setup events and more.
+
 - Color change, button customizations all on XAML
 - Insert keys on the Windows registry
 - Setup Unninstaller
-- Multi Language Suport
+
 
 # :rocket: Technologies
 
