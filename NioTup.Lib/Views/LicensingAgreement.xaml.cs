@@ -36,7 +36,7 @@ namespace NioTup.Lib.Views
             }
             else
             {
-
+                //Open Link
             }
         }
 

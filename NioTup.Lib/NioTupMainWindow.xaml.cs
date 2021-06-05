@@ -1,4 +1,5 @@
-﻿using NioTup.Lib.Models;
+﻿using NioTup.Lib.Classes;
+using NioTup.Lib.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,8 @@ namespace NioTup.Lib
         {   
             this.DataContext = Shared.InstallVM;
 
+
+            Shared.CallEvent(SetupEventNames.ApplicationStart, null, null); 
 
             if (Shared.InstallVM.SetupInfo.IgnoreWelcomeView)
             {

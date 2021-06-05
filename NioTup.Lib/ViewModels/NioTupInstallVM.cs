@@ -261,6 +261,8 @@ namespace NioTup.Lib.ViewModels
                     Shared.MainWindow.Close();
                 }
             }, (x) => CanCancel());
+
+            
         }
 
         public void acLogAndSetupCurrentMessage(string msg)
@@ -287,6 +289,7 @@ namespace NioTup.Lib.ViewModels
                 ButtonPreviousIsVisible = true;
                 ButtonCancelIsVisible = false;
 
+                Shared.CallEvent(SetupEventNames.MainContentChanged, null, null);
 
             }
             else if (MainWindowContent.GetType() == typeof(LicensingAgreement))
@@ -304,6 +307,8 @@ namespace NioTup.Lib.ViewModels
                     ButtonPreviousIsVisible = true;
                     CustomButtonText = Resources.Install;
                     CustomButtonIsVisible = true;
+
+                    Shared.CallEvent(SetupEventNames.MainContentChanged, null, null);
                 }
                 else
                 {
@@ -378,79 +383,10 @@ namespace NioTup.Lib.ViewModels
                 try
                 {
 
-                    if (SetupInfo.DownloadFiles?.Count > 0)
-                    {
-                        Action<double> accaoReport = x =>
-                        {
-                            CurrentMessage = Properties.Resources.DownloadFile + ": " + x.ToString("F2", CultureInfo.CurrentUICulture) + "%";
-                        };
+                    await DownloadFiles();
 
-                        foreach (var item in SetupInfo.DownloadFiles)
-                        {
-                            if (item.ReportProgress)
-                            {
-                                acLogAndSetupCurrentMessage(Properties.Resources.DownloadFile + ": " + Path.GetFileName(item.Destination));
-                            }
+                    ExtractFiles();
 
-                            string ToPath = Shared.HandleSpecialTags(item.Destination);
-                            var directory = Path.GetDirectoryName(ToPath);
-
-                            if (!Directory.Exists(directory))
-                            {
-                                Directory.CreateDirectory(directory);
-                                FoldersCreated.Add(directory);
-                            }
-
-                            if (await Shared.FnDownloadAsync(item.URL, ToPath, item.Headers, item.ReportProgress ? accaoReport : null))
-                            {
-                                FilesCreated.Add(ToPath);
-                                if (item.ReportProgress)
-                                {
-                                    acLogAndSetupCurrentMessage(Properties.Resources.DownloadComplete);
-                                }
-                            }
-                        }
-                    }
-
-                    acLogAndSetupCurrentMessage(Properties.Resources.ValidatingFiles);
-                    var str = Shared.GetEmbeddedResource("files.zip");
-
-                    double bytes = 0;
-                    if (str != null)
-                    {
-                        using (str)
-                        using (var zip = new ZipArchive(str, ZipArchiveMode.Read))
-                        {
-                            string FileToPath = null;
-                            foreach (var file in zip.Entries)
-                            {
-                                var folderindex = int.Parse(file.FullName.Split('/', StringSplitOptions.RemoveEmptyEntries).First());
-                                string fileName = file.Name;
-
-                                string sFolderTo = Shared.HandleSpecialTags(Shared.SetupData.Files[folderindex - 1].Destination);
-
-                                if (!Directory.Exists(sFolderTo))
-                                {
-                                    Directory.CreateDirectory(sFolderTo);
-                                    FoldersCreated.Add(sFolderTo);
-                                }
-
-                                FileToPath = System.IO.Path.Combine(sFolderTo, fileName);
-                                acLog(string.Format(Properties.Resources.ExtractingFileTo, fileName, System.IO.Path.GetDirectoryName(sFolderTo)));
-
-                                if (!UnZipFile(file, FileToPath))
-                                {
-
-                                }
-
-                                bytes += file.Length;
-
-                                FilesCreated.Add(FileToPath);
-                            }
-                        }
-                    }
-
-                    acLogAndSetupCurrentMessage(Properties.Resources.TotalSizeAfterExtract + " " + Shared.BytesToReadableText(bytes));
 
 
                 }
@@ -488,6 +424,92 @@ namespace NioTup.Lib.ViewModels
                     }
                 }
             });
+        }
+
+        private async Task DownloadFiles()
+        {
+            if (SetupInfo.DownloadFiles?.Count > 0)
+            {
+                Action<double> accaoReport = x =>
+                {
+                    CurrentMessage = Properties.Resources.DownloadFile + ": " + x.ToString("F2", CultureInfo.CurrentUICulture) + "%";
+                };
+
+                foreach (var item in SetupInfo.DownloadFiles)
+                {
+                    if (item.ReportProgress)
+                    {
+                        acLogAndSetupCurrentMessage(Properties.Resources.DownloadFile + ": " + Path.GetFileName(item.Destination));
+                    }
+
+                    string ToPath = Shared.HandleSpecialTags(item.Destination);
+                    var directory = Path.GetDirectoryName(ToPath);
+
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                        FoldersCreated.Add(directory);
+                    }
+
+                    Shared.CallEvent(SetupEventNames.DownloadFile, SetupEventActions.DownloadStart, ToPath);
+                    if (await Shared.FnDownloadAsync(item.URL, ToPath, item.Headers, item.ReportProgress ? accaoReport : null))
+                    {
+                        Shared.CallEvent(SetupEventNames.DownloadFile, SetupEventActions.DownloadComplete, ToPath);
+                        FilesCreated.Add(ToPath);
+                        if (item.ReportProgress)
+                        {
+                            acLogAndSetupCurrentMessage(Properties.Resources.DownloadComplete);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ExtractFiles()
+        {
+            acLogAndSetupCurrentMessage(Properties.Resources.ValidatingFiles);
+            var str = Shared.GetEmbeddedResource("files.zip");
+
+            double bytes = 0;
+            if (str != null)
+            {
+                using (str)
+                using (var zip = new ZipArchive(str, ZipArchiveMode.Read))
+                {
+                    string FileToPath = null;
+                    foreach (var file in zip.Entries)
+                    {
+                        var folderindex = int.Parse(file.FullName.Split('/', StringSplitOptions.RemoveEmptyEntries).First());
+                        string fileName = file.Name;
+
+                        string sFolderTo = Shared.HandleSpecialTags(Shared.SetupData.Files[folderindex - 1].Destination);
+
+                        if (!Directory.Exists(sFolderTo))
+                        {
+                            Directory.CreateDirectory(sFolderTo);
+                            FoldersCreated.Add(sFolderTo);
+                        }
+
+                        FileToPath = System.IO.Path.Combine(sFolderTo, fileName);
+                        acLog(string.Format(Properties.Resources.ExtractingFileTo, fileName, System.IO.Path.GetDirectoryName(sFolderTo)));
+
+                        Shared.CallEvent(SetupEventNames.ExtractFile, SetupEventActions.ExtractStart, FileToPath);
+                        
+                        if (!UnZipFile(file, FileToPath))
+                        {
+                            return;
+                        }
+
+                        Shared.CallEvent(SetupEventNames.ExtractFile, SetupEventActions.ExtractComplete, FileToPath);
+
+                        bytes += file.Length;
+
+                        FilesCreated.Add(FileToPath);
+                    }
+                }
+            }
+
+            acLogAndSetupCurrentMessage(Properties.Resources.TotalSizeAfterExtract + " " + Shared.BytesToReadableText(bytes));
         }
 
         private bool UnZipFile(ZipArchiveEntry entry, string Destination)

@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using NioTup.Lib;
 using NioTup.Lib.Models;
 using NioTupApp.Models;
@@ -34,6 +36,15 @@ namespace NioTupApp.PlatformCompilers
 
             try
             {
+                var relPathCurrentConfig = Path.GetDirectoryName(Path.GetFullPath(configPath));
+                SetupInfo setupData = new SetupInfo
+                {
+                    Files = new List<SetupDataFile>(),
+                };
+
+                //Copy Default Properties to Setup Config Data
+                Shared.CopyPropertiesTo(config, setupData);
+
                 string CompilationMainFolder = Path.Combine("./", "NioTupLib", PathID);
                 Directory.CreateDirectory(CompilationMainFolder);
 
@@ -43,14 +54,7 @@ namespace NioTupApp.PlatformCompilers
 
                 string projectFilePath = Path.Combine(sFilesFolder, $"{config.ApplicationAssemblyName}.csproj");
 
-
-
-            
-
-                //Add Application XAML and .CS
-                string applicationSource = appCS.Replace("#APP_NAME#", config.ApplicationAssemblyName);
-             
-
+                //Fix Assembly Version and validation
                 string AssemblyVersion = "";
                 string AssemblyFileVersion = null;
 
@@ -89,33 +93,145 @@ namespace NioTupApp.PlatformCompilers
                 {
                     AssemblyFileVersion = AssemblyVersion;
                 }
-
-
-               
-                string csprojFileText = projectString(!string.IsNullOrWhiteSpace(config.SplashImagePath),
-                !string.IsNullOrWhiteSpace(config.ApplicationIconPath), !string.IsNullOrWhiteSpace(config.LicencePath),
-                config.AssemblyDescription, config.AssemblyCopyright, AssemblyVersion, AssemblyFileVersion,config.AssemblyProduct);
-                if (config.Platform == Platform.X86)
+              
+             
+                string LicenceCode = null;
+                if (!string.IsNullOrEmpty(config.LicencePath))
                 {
-                    csprojFileText = csprojFileText.Replace("win-x64", "win-x86");
+                    string licencePath = Path.Combine(relPathCurrentConfig, config.LicencePath);
+
+                    if (File.Exists(licencePath))
+                    {
+                        LicenceCode = "licence.zip";
+                        File.Delete(Path.Combine(sFilesFolder, LicenceCode));
+
+                        using (var fileReader = File.Open(licencePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        using (var destFile = File.Open(Path.Combine(sFilesFolder, LicenceCode), FileMode.OpenOrCreate, FileAccess.Write))
+                        using (var zipLience = new GZipStream(destFile, CompressionLevel.Optimal))
+                        {
+                            await fileReader.CopyToAsync(zipLience);
+                            setupData.HasLicence = true;
+                        }
+                        LicenceCode = $"<EmbeddedResource Include=\"{LicenceCode}\" />";
+                    }
+                    else
+                    {
+                        actionLogAndCurrentMessage($"Licence file not found: {config.SplashImagePath}");
+                        return false;
+                    }
                 }
-                //Create WPF Project
-                File.WriteAllText(projectFilePath, csprojFileText);
+                
+                string ApplicationSplashCode = null;
+                if (!string.IsNullOrEmpty(config.SplashImagePath))
+                {
+                    string SplashImagePath = Path.Combine(relPathCurrentConfig, config.LicencePath);
+                    if (File.Exists(SplashImagePath))
+                    {
+                        ApplicationSplashCode = "splash.png";
+                        File.Copy(SplashImagePath, Path.Combine(sFilesFolder, ApplicationSplashCode), true);
+                        ApplicationSplashCode = $"<EmbeddedResource Include=\"{ApplicationSplashCode}\" />";
+                    }
+                    else
+                    {
+                        actionLogAndCurrentMessage($"Splash Image not found: {config.SplashImagePath}");
+                        return false;
+                    }
+                }
 
-                File.WriteAllText(Path.Combine(sFilesFolder, "App.xaml.cs"), applicationSource);
-                File.WriteAllText(Path.Combine(sFilesFolder, "App.xaml"), appXaml.Replace("#APP_NAME#", config.ApplicationAssemblyName));
+                string ApplicationIcon = null;
+                if (!string.IsNullOrEmpty(config.ApplicationIconPath))
+                {
+                    string ApplicationIconPath = Path.Combine(relPathCurrentConfig, config.ApplicationIconPath);
+                    if (File.Exists(ApplicationIconPath))
+                    {
+                        ApplicationIcon = "app.ico";
+                        File.Copy(ApplicationIconPath, Path.Combine(sFilesFolder, ApplicationIcon), true);
+                    }
+                    else
+                    {
+                        actionLogAndCurrentMessage($"Application Icon not found: {config.ApplicationIconPath}");
+                        return false;
+                    }
+                }
 
-                //Add Solution
-                string solutionName = Path.Combine(sFilesFolder, $"{config.ApplicationAssemblyName}.sln");
-                File.WriteAllText(solutionName, solutionSource.Replace("#APP_NAME#", config.ApplicationAssemblyName));
 
-                var pathApp = Path.GetFullPath(sFilesFolder);
+                //Add Application XAML and .CS
+                //Copy from Embedded resources example of project file
+                string ApplicationLanguageCodes = null;
+                string csProjectSample = null;
+                string csAppXamlSample = null;
+                string csAppXamlCodeSample = null;
+                string csUserScriptSample = null;
 
+                using (var fileSource = Shared.GetEmbeddedResource("CompilerResources.DotNetCoreProject.SampleProject.csproj"))
+                using (var reader = new StreamReader(fileSource))
+                {
+                    csProjectSample = await reader.ReadToEndAsync();
+                }
+
+                using (var fileSource = Shared.GetEmbeddedResource("CompilerResources.DotNetCoreProject.App.xaml"))
+                using (var reader = new StreamReader(fileSource))
+                {
+                    csAppXamlSample = await reader.ReadToEndAsync();
+                }
+
+
+                using (var fileSource = Shared.GetEmbeddedResource("CompilerResources.DotNetCoreProject.App.xaml.cs"))
+                using (var reader = new StreamReader(fileSource))
+                {
+                    csAppXamlCodeSample = await reader.ReadToEndAsync();
+                }
+
+                using (var fileSource = Shared.GetEmbeddedResource("CompilerResources.DotNetCoreProject.UserScripts.cs"))
+                using (var reader = new StreamReader(fileSource))
+                {
+                    csUserScriptSample = await reader.ReadToEndAsync();
+                }
+
+                if (config.Languages?.Count > 0)
+                {
+                    foreach (var item in config.Languages)
+                    {
+                        if(File.Exists($"./{item}/NioTup.Lib.resources.dll"))
+                        {
+                            string sLanguageFile = $"NioTup.Lib.{item.Replace("-", "")}.resources.dll";
+                            File.Copy($"./{item}/NioTup.Lib.resources.dll", Path.Combine(sFilesFolder, sLanguageFile), true);
+                            ApplicationLanguageCodes += $"<EmbeddedResource Include=\"{sLanguageFile}\" />\n";
+                        }
+                    }                    
+                }
+
+                csProjectSample = csProjectSample.Replace("#AssemblyName", config.ApplicationAssemblyName);
+                csProjectSample = csProjectSample.Replace("#AssemblyDescription", config.AssemblyDescription);
+                csProjectSample = csProjectSample.Replace("#AssemblyCopyright", config.AssemblyCopyright);
+                csProjectSample = csProjectSample.Replace("#AssemblyVersion", AssemblyVersion);
+                csProjectSample = csProjectSample.Replace("#AssemblyFileVersion", AssemblyFileVersion);
+                csProjectSample = csProjectSample.Replace("#AssemblyProduct", config.AssemblyProduct);
+                csProjectSample = csProjectSample.Replace("#ApplicationIcon", ApplicationIcon);
+                csProjectSample = csProjectSample.Replace("<!--#SplashReference-->", ApplicationSplashCode);
+                csProjectSample = csProjectSample.Replace("<!--#LanguagesReference-->", ApplicationLanguageCodes);
+                csProjectSample = csProjectSample.Replace("<!--#LicenceReference-->", LicenceCode);
+
+                csUserScriptSample = csUserScriptSample.Replace("//#SetupEventHandleScripts", config.SetupEventHandleScripts);
+                csUserScriptSample = csUserScriptSample.Replace("//#UserScripts", config.UserScripts);
+
+                //Write .csproj file
+                File.WriteAllText(projectFilePath, csProjectSample);
+
+                //Write App.xaml file
+                File.WriteAllText(Path.Combine(sFilesFolder, "App.xaml"), csAppXamlSample);
+                
+                //Write App.xaml.cs file
+                File.WriteAllText(Path.Combine(sFilesFolder, "App.xaml.cs"), csAppXamlCodeSample);
+
+                //Write UserScriptss file
+                File.WriteAllText(Path.Combine(sFilesFolder, "UserScripts.cs"), csUserScriptSample);
+                
                 //Copy Lib
                 File.Copy("./NioTup.Lib.dll", Path.Combine(sFilesFolder, "NioTup.Lib.dll"), true);
                 File.Copy("./CommandLine.dll", Path.Combine(sFilesFolder, "CommandLine.dll"), true);
 
-                File.Copy("./pt-Br/NioTup.Lib.resources.dll", Path.Combine(sFilesFolder, "NioTup.Lib.ptbr.resources.dll"), true);
+                //File.Copy("./pt-Br/NioTup.Lib.resources.dll", Path.Combine(sFilesFolder, "NioTup.Lib.ptbr.resources.dll"), true);
 
                 List<FilesCheck> FilesChecker = new List<FilesCheck>();
 
@@ -222,70 +338,12 @@ namespace NioTupApp.PlatformCompilers
 
                 LogMessage($"Total files to be Zipped {FilesChecker.Sum(x => x.Sources.Count)}");
 
-
-                SetupInfo setupData = new SetupInfo
-                {
-                    Files = new List<SetupDataFile>(),
-                };
-
-                //Copy Default Properties to Setup Config Data
-                Shared.CopyPropertiesTo(config, setupData);
-
                 AppShared.ZipFiles(config, Path.Combine(sFilesFolder, "files.zip"), FilesChecker, setupData.Files, CurrentMessage);
 
                 LogMessage($"Files Zipped");
 
-
-
-                if (!string.IsNullOrEmpty(config.LicencePath))
-                {
-                    if (File.Exists(config.LicencePath))
-                    {
-                        File.Delete(Path.Combine(sFilesFolder, "licence.zip"));
-                        using (var fileReader = File.Open(config.LicencePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        using (var destFile = File.Open(Path.Combine(sFilesFolder, "licence.zip"), FileMode.OpenOrCreate, FileAccess.Write))
-                        using (var zipLience = new GZipStream(destFile, CompressionLevel.Optimal))
-                        {
-                            await fileReader.CopyToAsync(zipLience);
-                            setupData.HasLicence = true;
-                        }
-                    }
-                    else
-                    {
-                        actionLogAndCurrentMessage($"Licence file not found: {config.SplashImagePath}");
-                        return false;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(config.SplashImagePath))
-                {
-                    if (File.Exists(config.SplashImagePath))
-                    {
-                        File.Copy(config.SplashImagePath, Path.Combine(sFilesFolder, "splash.png"), true);
-                    }
-                    else
-                    {
-                        actionLogAndCurrentMessage($"Splash Image not found: {config.SplashImagePath}");
-                        return false;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(config.ApplicationIconPath))
-                {
-                    if (File.Exists(config.ApplicationIconPath))
-                    {
-                        File.Copy(config.ApplicationIconPath, Path.Combine(sFilesFolder, "app.ico"), true);
-                    }
-                    else
-                    {
-                        actionLogAndCurrentMessage($"Application Icon not found: {config.ApplicationIconPath}");
-                        return false;
-                    }
-                }
-
                 //Write setup.config.json
                 File.WriteAllText(Path.Combine(sFilesFolder, "setup.config.json"), System.Text.Json.JsonSerializer.Serialize(setupData));
-
 
                 string outPutPath = Path.GetFullPath(config.OutputPath);
                 string outPutExeName = Path.Combine(outPutPath, config.ApplicationAssemblyName + ".exe");
@@ -293,9 +351,10 @@ namespace NioTupApp.PlatformCompilers
                 {
                     File.Delete(outPutExeName);
                 }
-
+               
                 Environment.CurrentDirectory = AppShared.defaultCurrentDirectory;
 
+                var pathApp = Path.GetFullPath(sFilesFolder);
 
                 //Project will build and run with current application allowing debug on visual studio
                 if (Debug)
@@ -389,163 +448,5 @@ namespace NioTupApp.PlatformCompilers
             if (Directory.Exists(sPath))
                 Directory.Delete(sPath, true);
         }
-
-        public static string projectString(bool includeSplash, bool applicationIcon, bool licenceFile, string assemblyDescription,string  assemblyCopyright, string AssemblyVersion, string FileVersion, string assemblyProduct)
-        {
-            return @"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>false</SelfContained>
-    <DebugType>embedded</DebugType>
-    <OutputType>Exe</OutputType>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
-    <Description>" + assemblyDescription  + @"</Description>
-    <Copyright>" + assemblyCopyright + @"</Copyright>
-    <AssemblyVersion>" + AssemblyVersion  + @"</AssemblyVersion>
-    <Version>" + FileVersion  + @"</Version>
-    <Product>" + assemblyProduct + @"</Product>
-" + (applicationIcon ? "\n<ApplicationIcon>app.ico</ApplicationIcon>" : "") +
-    @"
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <RollForward>Minor</RollForward>
-  </PropertyGroup>  
-
-  <ItemGroup>
-    <Reference Include=""NioTup.Lib"">
-      <HintPath>.\NioTup.Lib.dll</HintPath>  
-     </Reference>  
-    <Reference Include=""CommandLine"">
-      <HintPath>.\CommandLine.dll</HintPath>  
-      </Reference>  
-    </ItemGroup>
-" + (includeSplash ? @"<ItemGroup>
-    <Resource Include=""splash.png""  />
-  </ItemGroup>
-" : "") +
-  @"<ItemGroup>
-    <EmbeddedResource Include =""setup.config.json"" />
-    <EmbeddedResource Include = ""files.zip"" />
-    <EmbeddedResource Include = ""NioTup.Lib.ptbr.resources.dll"" />
-" + (licenceFile ? @"<EmbeddedResource Include = ""licence.zip"" />" : "") + @"
-  </ItemGroup>
-</Project>
-";
-        }
-
-        static string appCS = @"using System;
-using System.Windows;
-using System.IO;
-using System.Reflection;
-using NioTup.Lib;
-
-[assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
-                                     //(used if a resource is not found in the page,
-                                     // or application resource dictionaries)
-    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
-                                              //(used if a resource is not found in the page,
-                                              // app, or any theme specific resource dictionaries)
-)]
-
-
-namespace #APP_NAME# {  
-    
-    public partial class App : Application
-    {        
-        static App()
-        {
-            try
-            {
-                Shared.MainApplicationAssembly = typeof(App).Assembly;
-                SplashScreen splashScreen = new SplashScreen(typeof(App).Assembly, ""splash.png"");
-                splashScreen.Show(true);
-            }
-            catch(Exception)
-            {}
-        }
-
-        public App()
-        {
-             AppDomain.CurrentDomain.AssemblyResolve += currentDomain_AssemblyResolve;
-        }
-
-        private Assembly currentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            if(args.Name.Contains(""NioTup.Lib"") && args.Name.Contains(""resources""))
-            {
-                if (System.Globalization.CultureInfo.CurrentUICulture.Name != ""en-US"" && System.Globalization.CultureInfo.CurrentUICulture.Name != ""en-GB"")
-                {
-                    var resource = typeof(App).Assembly.GetManifestResourceStream(typeof(App).Assembly.GetName().Name + "".NioTup.Lib."" + System.Globalization.CultureInfo.CurrentUICulture.Name.Replace(""-"","""").ToLower() + "".resources.dll"");
-
-                    if(resource!=null) 
-                    {
-                         using(var memStream = new MemoryStream())
-                         {
-                            resource.CopyTo(memStream); 
-                            return Assembly.Load(memStream.ToArray());
-                         }
-                    }
-                }
-            }
-            return null;
-        }
-        
-        public static void DebugRun() 
-        {
-            Shared.AppStart();
-        }
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            Shared.AppStart();
-        }
-    }
-}";
-
-        static string appXaml = @"<Application x:Class=""#APP_NAME#.App""
-             xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-             xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-             Startup=""Application_Startup"">
-    <Application.Resources>         
-    </Application.Resources>
-</Application>
-";
-
-        static string solutionSource = @"Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.79
-MinimumVisualStudioVersion = 10.0.40219.1
-Project(""{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"") = ""#APP_NAME#"", ""#APP_NAME#.csproj"", ""{AEB79FD9-7ACE-44F5-9E2D-416C367253AB}""
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5DAF87A1-F3B2-463F-8C59-92091CA51DFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5DAF87A1-F3B2-463F-8C59-92091CA51DFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5DAF87A1-F3B2-463F-8C59-92091CA51DFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5DAF87A1-F3B2-463F-8C59-92091CA51DFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AEB79FD9-7ACE-44F5-9E2D-416C367253AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEB79FD9-7ACE-44F5-9E2D-416C367253AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AEB79FD9-7ACE-44F5-9E2D-416C367253AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AEB79FD9-7ACE-44F5-9E2D-416C367253AB}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6C888B75-246F-4E16-BE37-51E91080263E}
-	EndGlobalSection
-EndGlobal
-";
     }
 }

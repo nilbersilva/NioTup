@@ -26,6 +26,10 @@ namespace NioTup.Lib
         public static string InternalUrlShowLicensingFile { get; } = "https://niotup.lib";
         public static ResourceDictionary DefaultResourceColors { get; set; }
         public static Window MainWindow { get; set; }
+
+        public static event SetupEventDelegate SetupEvent;
+        public delegate void SetupEventDelegate(string eventName, string action, string fileName);
+
         public static void AppStart()
         {
             if (MainApplicationAssembly == null) MainApplicationAssembly = Assembly.GetEntryAssembly();
@@ -67,7 +71,6 @@ namespace NioTup.Lib
             Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
             Application.Current.MainWindow.ShowDialog();
         }
-
 
         private static bool AddedTheme;
         internal static void AddTheme()
@@ -144,11 +147,11 @@ namespace NioTup.Lib
             }
         }
 
-        public static Stream GetEmbeddedResource(string aname)
+        public static Stream GetEmbeddedResource(string resourceName)
         {
             if (MainApplicationAssembly == null) MainApplicationAssembly = Assembly.GetEntryAssembly();
             var names = MainApplicationAssembly.GetManifestResourceNames();
-            return MainApplicationAssembly.GetManifestResourceStream(MainApplicationAssembly.GetName().Name + $".{aname}");
+            return MainApplicationAssembly.GetManifestResourceStream(names.Where(x=> x.ToLower() == (MainApplicationAssembly.GetName().Name + $".{resourceName}").ToLower()).FirstOrDefault());
         }
 
         public static string HandleSpecialTags(string input_File_or_Directory)
@@ -246,7 +249,6 @@ namespace NioTup.Lib
                 msgWindow.ShowDialog();
             });
         }
-
 
         public static void ShowError(string msg, string Title = null)
         {
@@ -383,6 +385,11 @@ namespace NioTup.Lib
                 ShowError(ex.Message + "\n" + ex.InnerException?.Message);
             }
             return false;
+        }
+
+        public static void CallEvent(string eventName, string action, string fileName)
+        {
+            SetupEvent?.Invoke(eventName, action, fileName);
         }
     }
 }

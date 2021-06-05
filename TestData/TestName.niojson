@@ -30,6 +30,12 @@
       "Value": "{Desktop}\\TesteApp"
     }
   ],
+  "SetupEventHandleScripts": "//This Script Starts inside a static void\r\nif (eventName == SetupEventNames.DownloadFile \u0026\u0026 action == SetupEventActions.DownloadComplete)\r\n{\r\n\thandleSetupDownloadCompleteEvents(fileName);\r\n}",
+  "UserScripts": "static string bobFileName =  \u0022bob.png\u0022;\r\n\r\nprivate static void handleSetupDownloadCompleteEvents(string fileName)\r\n{\r\n\tif(Path.GetFileName(fileName) == bobFileName)\r\n\t{\r\n\t   Shared.ShowMessage($\u0022User Script - Event Handler Sponge Bob Downloaded!\u0022);\r\n\t}\r\n}",
+  "Languages": [
+    "pt-Br"
+  ],
+  "SaveConfigAfterBuild": true,
   "ApplicationName": null,
   "LicenceUrlNavigate": null,
   "CompanyName": "NioTup Company",

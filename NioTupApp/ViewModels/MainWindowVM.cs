@@ -104,8 +104,5 @@ namespace NioTupApp.ViewModels
                 Notify();
             }
         }
-
-        public SetupConfig CurrentConfig { get; set; }
-
     }
 }

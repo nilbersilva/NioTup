@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <DebugType>embedded</DebugType>
+    <OutputType>Exe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>#AssemblyName</AssemblyName>
+    <RootNamespace>#AssemblyName</RootNamespace>
+    <Description>#AssemblyDescription</Description>
+    <Copyright>#AssemblyCopyright</Copyright>
+    <AssemblyVersion>#AssemblyVersion</AssemblyVersion>
+    <Version>#AssemblyFileVersion</Version>
+    <Product>#AssemblyProduct</Product>
+    <ApplicationIcon>#ApplicationIcon</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RollForward>Minor</RollForward>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NioTup.Lib">
+      <HintPath>.\NioTup.Lib.dll</HintPath>
+    </Reference>
+    <Reference Include="CommandLine=">
+      <HintPath>.\CommandLine.dll</HintPath>
+    </Reference>
+    <EmbeddedResource Include="setup.config.json" />
+    <EmbeddedResource Include="files.zip" />
+    <!--#SplashReference-->
+    <!--#LanguagesReference-->
+    <!--#LicenceReference-->    
+  </ItemGroup>
+</Project>

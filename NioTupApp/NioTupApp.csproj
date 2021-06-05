@@ -15,6 +15,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CompilerResources\DotNetCoreProject\App.xaml.cs" />
+    <Compile Remove="CompilerResources\DotNetCoreProject\SampleProject.csproj" />
+    <Compile Remove="CompilerResources\DotNetCoreProject\UserScripts.cs" />
+    <None Remove="Images\compile.png" />
+    <None Remove="Images\fileEdit.ico" />
+    <Page Remove="CompilerResources\DotNetCoreProject\App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CompilerResources\DotNetCoreProject\App.xaml" />
+    <EmbeddedResource Include="CompilerResources\DotNetCoreProject\App.xaml.cs" />
+    <EmbeddedResource Include="CompilerResources\DotNetCoreProject\UserScripts.cs" />
+    <EmbeddedResource Include="CompilerResources\DotNetCoreProject\SampleProject.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
     <PackageReference Include="MahApps.Metro" Version="2.4.5" />
     <PackageReference Include="Microsoft.Build" Version="16.9.0" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.9.0" />
@@ -30,6 +47,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="3.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.9.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
 
@@ -41,6 +59,11 @@
     <None Update="splash.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\compile.png" />
+    <Resource Include="Images\fileEdit.ico" />
   </ItemGroup>
 
 </Project>

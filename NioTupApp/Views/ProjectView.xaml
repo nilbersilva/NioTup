@@ -1,0 +1,240 @@
+﻿<UserControl x:Class="NioTupApp.Views.ProjectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:localConverters="clr-namespace:NioTupApp.Converters"
+             xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:behav="clr-namespace:NioTupApp.Behaviours"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="680" d:DesignWidth="800">
+    <UserControl.Resources>
+        <localConverters:SetupRelativeImagePathConverter x:Key="SetupRelativeImagePathConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ProgressBar IsIndeterminate="{Binding IsBusy}" Background="Transparent" BorderThickness="0" Height="6"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8" IsEnabled="{Binding ControlsAreEnabled}" Grid.ColumnSpan="2" VerticalAlignment="Top">
+            <TextBlock Text="Project" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBox Text="{Binding ProjectPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="500" Margin="5,0"
+                     />
+            <Button Width="32" Height="32" DockPanel.Dock="Right" Click="acSelectFolder" Padding="3" Background="Transparent"
+                        BorderBrush="{x:Null}" BorderThickness="0">
+                <Image Source="pack://application:,,,/NioTup.Lib;component/Images/folder.png" Stretch="Uniform" 
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </Button>
+            <Button Padding="6" Margin="5,0" Click="acBuild">Build</Button>
+            <Button Padding="6" Margin="5,0" Click="acShowSetupMainWindow">View Setup MainWindow</Button>
+            <CheckBox Content="Is Debugging" VerticalAlignment="Center" Margin="5,0"
+                      IsChecked="{Binding IsDebugging,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Text="{Binding CurrentMessage}" TextWrapping="Wrap"  VerticalAlignment="Top" />
+
+        <TabControl Grid.Row="3" x:Name="MainTabControl">
+            <TabItem Header="Edit Project" DataContext="{Binding CurrentSetup}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Paths are relative to current configuration Path" FontWeight="Bold" Grid.ColumnSpan="2" TextAlignment="Center"/>
+
+                    <Grid HorizontalAlignment="Left" Margin="5,30,5,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Application Name" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Text="{Binding ApplicationName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Window Title" Grid.Row="1" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="1" Text="{Binding MainWindowTitle,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Company Name" Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="2" Text="{Binding CompanyName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Name" Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="3" Text="{Binding ApplicationAssemblyName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Version" Grid.Row="4" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="4"  Text="{Binding AssemblyVersion,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly File Version" Grid.Row="5" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="5"  Text="{Binding AssemblyFileVersion,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Product" Grid.Row="6" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="6"  Text="{Binding AssemblyProduct,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Title" Grid.Row="7" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="7"  Text="{Binding AssemblyTitle,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Copyright" Grid.Row="8" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="8"  Text="{Binding AssemblyCopyright,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Assembly Description" Grid.Row="9" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="9"  Text="{Binding AssemblyDescription,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Default Font Size" Grid.Row="10" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="10"  Text="{Binding SetupDefaultFontSize,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Licence URL" Grid.Row="11" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="11"  Text="{Binding LicenceURL,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Dark Theme Default" Grid.Row="12" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <CheckBox Grid.Column="1" Grid.Row="12"  IsChecked="{Binding AssemDarkThemeblyDescription,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Ignore Welcome" Grid.Row="13" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <CheckBox Grid.Column="1" Grid.Row="13"  IsChecked="{Binding AssemDarkThemeblyDescription,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Requires Default&#10;Installtion Path" Grid.Row="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <CheckBox Grid.Column="1" Grid.Row="14"  IsChecked="{Binding DefaultInstallPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Auto Close After Install" Grid.Row="15" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <CheckBox Grid.Column="1" Grid.Row="15"  IsChecked="{Binding AutoCloseAfterInstall,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Save Config After Build" Grid.Row="16" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <CheckBox Grid.Column="1" Grid.Row="16"  IsChecked="{Binding SaveConfigAfterBuild,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+                    </Grid>
+
+                    <Grid HorizontalAlignment="Left" Margin="5,30,5,0" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Application Icon Path" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Text="{Binding ApplicationIconPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+                        <Image Grid.Column="2" Width="24" Height="24" Stretch="Uniform" Margin="5,0">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource SetupRelativeImagePathConverter}">
+                                    <Binding Path="DataContext.ProjectPath" ElementName="MainTabControl" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="ApplicationIconPath" UpdateSourceTrigger="PropertyChanged"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
+
+                        <TextBlock Text="Splash Image Path" Grid.Row="1" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="1" Text="{Binding SplashImagePath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+                        <Image Grid.Column="2" Grid.Row="1" Width="24" Height="24" Stretch="Uniform" Margin="5,0">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource SetupRelativeImagePathConverter}">
+                                    <Binding Path="DataContext.ProjectPath" ElementName="MainTabControl" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="SplashImagePath" UpdateSourceTrigger="PropertyChanged"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
+
+                        <TextBlock Text="Company Logo Path" Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="2" Text="{Binding CompanyLogoPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+                        <Image Grid.Column="2" Grid.Row="2" Width="24" Height="24" Stretch="Uniform" Margin="5,0">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource SetupRelativeImagePathConverter}">
+                                    <Binding Path="DataContext.ProjectPath" ElementName="MainTabControl" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="CompanyLogoPath" UpdateSourceTrigger="PropertyChanged"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
+
+                        <TextBlock Text="Output Path" Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1"  Grid.Row="3" Text="{Binding OutputPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Licence Path" Grid.Row="4" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBox Grid.Column="1" Grid.Row="4"  Text="{Binding LicencePath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Platform" Grid.Row="5" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <ComboBox x:Name="cmbPlatform" Grid.Column="1" Grid.Row="5" SelectedItem="{Binding Platform}" Text="{Binding Platform}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Compression Level" Grid.Row="6" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <ComboBox x:Name="cmbCompression" Grid.Column="1" Grid.Row="6" SelectedItem="{Binding CompressionLevel}" Text="{Binding CompressionLevel}" Width="200" Margin="5,0,0,5"/>
+
+                        <TextBlock Text="Framework" Grid.Row="7" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <ComboBox x:Name="cmbFramework" Grid.Column="1" Grid.Row="7" SelectedItem="{Binding Framework}" Text="{Binding Framework}" Width="200" Margin="5,0,0,5"/>
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Edit Scripts" DataContext="{Binding CurrentSetup}">
+                <Grid Margin="5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition  Height="Auto"/>
+                        <RowDefinition  Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Handler for Setup Events" FontWeight="Bold" Margin="8,0,0,0"/>
+                    <TextBlock Text="SetupEventDelegate(string eventName, string action, string fileName) - C#" Grid.Row="1" Margin="8"/>
+                    <avalon:TextEditor Grid.Row="2" ShowLineNumbers="True" SyntaxHighlighting="C#">
+                        <i:Interaction.Behaviors>
+                            <behav:AvalonEditBehaviour GiveMeTheText="{Binding SetupEventHandleScripts,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                        </i:Interaction.Behaviors>
+                    </avalon:TextEditor>
+
+                    <TextBlock Text="Custom User Scripts, can be classes, functions - C#" Grid.Row="3" FontWeight="Bold" Margin="8"/>
+                    <avalon:TextEditor Grid.Row="4" ShowLineNumbers="True" SyntaxHighlighting="C#">
+                        <i:Interaction.Behaviors>
+                            <behav:AvalonEditBehaviour GiveMeTheText="{Binding UserScripts,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                        </i:Interaction.Behaviors>
+                    </avalon:TextEditor>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Compilation Log" x:Name="CompilationLogTab">
+                <Grid>
+                    <TextBox  Text="{Binding CompilerLog,UpdateSourceTrigger=PropertyChanged}"
+                              ScrollViewer.ScrollChanged="TextBox_ScrollChanged"
+                              IsReadOnly="True" TextWrapping="Wrap"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
