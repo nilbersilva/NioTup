@@ -115,7 +115,7 @@
                         <TextBlock Text="Ignore Welcome" Grid.Row="13" VerticalAlignment="Center" FontWeight="Bold"/>
                         <CheckBox Grid.Column="1" Grid.Row="13"  IsChecked="{Binding AssemDarkThemeblyDescription,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
 
-                        <TextBlock Text="Requires Default&#10;Installtion Path" Grid.Row="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Text="Requires Default&#10;Installation Path" Grid.Row="14" VerticalAlignment="Center" FontWeight="Bold"/>
                         <CheckBox Grid.Column="1" Grid.Row="14"  IsChecked="{Binding DefaultInstallPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" Margin="5,0,0,5"/>
 
                         <TextBlock Text="Auto Close After Install" Grid.Row="15" VerticalAlignment="Center" FontWeight="Bold"/>
