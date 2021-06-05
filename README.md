@@ -51,6 +51,9 @@ $ dotnet run
 
 <div> 
   <img src="./github_assets/Installing.gif" width="600" />
+  <img src="./github_assets/projectEditor.jpg" width="600" />
+  <img src="./github_assets/editingScripts.jpg" width="600" />
+  <img src="./github_assets/compilationLog.jpg" width="600" />
 </div>
 
 # :page_facing_up: License
